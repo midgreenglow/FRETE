@@ -1,0 +1,13 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        { "type": "host", "value": "freetiq.in" }
+      ],
+      "destination": "https://www.freetiq.in/$1",
+      "permanent": true
+    }
+  ]
+}
+
