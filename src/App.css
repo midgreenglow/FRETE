@@ -15,7 +15,10 @@ html, body, #root { height: 100%; }
 body {
   margin: 0;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  background: var(--bg);
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(91,140,255,0.15), transparent 60%),
+    radial-gradient(1000px 500px at 10% -20%, rgba(0,212,166,0.12), transparent 60%),
+    var(--bg);
   color: var(--text);
 }
 
@@ -30,29 +33,7 @@ body {
 .frete-app .btn { cursor: pointer; }
 .frete-app { position: relative; z-index: 1; }
 
-/* Live wallpaper background */
-.bg-animated { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-.bg-animated::before, .bg-animated::after {
-  content: "";
-  position: absolute; inset: -20%;
-  background:
-    radial-gradient(45% 35% at 20% 20%, rgba(91,140,255,0.30), transparent 60%),
-    radial-gradient(35% 30% at 80% 10%, rgba(0,212,166,0.26), transparent 60%),
-    radial-gradient(50% 40% at 60% 80%, rgba(91,140,255,0.24), transparent 60%),
-    radial-gradient(40% 35% at 10% 90%, rgba(0,212,166,0.22), transparent 60%),
-    linear-gradient(180deg, #0b0c10 0%, #0b0c10 100%);
-  filter: blur(10px);
-  animation: float-bg 28s linear infinite;
-}
-.bg-animated::after { animation-duration: 36s; animation-direction: reverse; opacity: 0.7; }
-
-@keyframes float-bg {
-  0%   { transform: translate3d(0,0,0) scale(1); }
-  25%  { transform: translate3d(-3%, 2%, 0) scale(1.03); }
-  50%  { transform: translate3d(2%, -3%, 0) scale(1.02); }
-  75%  { transform: translate3d(-2%, -1%, 0) scale(1.04); }
-  100% { transform: translate3d(0,0,0) scale(1); }
-}
+/* Removed live wallpaper */
 
 /* Header */
 .site-header {
@@ -143,6 +124,31 @@ body {
 .gallery-card .title { font-weight: 600; }
 .gallery-card .type { color: var(--muted); font-size: 12px; text-transform: capitalize; }
 
+/* Testimonials */
+.testimonials-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.t-card { margin: 0; padding: 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); }
+.t-card blockquote { margin: 0 0 8px; font-weight: 600; }
+.t-card figcaption { color: var(--muted); font-size: 14px; }
+
+/* Size & Fit */
+.size-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.size-table { display: grid; gap: 6px; margin-top: 8px; }
+.size-table .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 8px 10px; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; }
+.size-table .row.head { background: rgba(255,255,255,0.06); font-weight: 600; }
+
+/* Options */
+.options-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.options-grid ul { margin: 8px 0 0; padding-left: 18px; }
+.options-grid li { margin: 4px 0; color: var(--muted); }
+
+/* Steps wide */
+.steps.wide { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+/* FAQ */
+.faq details { border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 10px 12px; background: rgba(255,255,255,0.04); }
+.faq details + details { margin-top: 10px; }
+.faq summary { cursor: pointer; font-weight: 600; }
+
 /* Category Picker */
 .picker-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .picker-card { position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 0; cursor: pointer; background: rgba(255,255,255,0.04); }
@@ -215,12 +221,16 @@ body {
   .features-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hero-inner { grid-template-columns: 1fr; }
   .picker-grid, .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .testimonials-grid, .size-grid, .options-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steps.wide { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 640px) {
   .header-inner { height: 56px; }
   .hero { padding: 56px 0; }
   .hero h1 { font-size: 34px; }
   .picker-grid, .gallery-grid { grid-template-columns: 1fr; }
+  .testimonials-grid, .size-grid, .options-grid { grid-template-columns: 1fr; }
+  .steps.wide { grid-template-columns: 1fr; }
   .picker-card img { height: 220px; }
 }
 

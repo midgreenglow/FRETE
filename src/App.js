@@ -48,7 +48,6 @@ function App() {
 
   return (
     <div className="frete-app">
-      <div className="bg-animated" aria-hidden="true"></div>
       <header className="site-header">
         <div className="container header-inner">
           <div className="brand">
@@ -67,37 +66,6 @@ function App() {
       </header>
 
       <main>
-        <section id="picker" className="section">
-          <div className="container">
-            <h2>What are you looking for?</h2>
-            <p className="muted">Pick a category to get started</p>
-            <CategoryPicker
-              onPick={(cat) => { setSelectedCategory(cat); setSelectedGender(null); }}
-              selectedCategory={selectedCategory}
-            />
-            {selectedCategory ? (
-              <div className="followup">
-                <div className="sheet">
-                  <div className="sheet-head">
-                    <div className="Sel">{selectedCategory.title}</div>
-                    <button className="icon-btn" onClick={() => { setSelectedCategory(null); setSelectedGender(null); }} aria-label="Close">✕</button>
-                  </div>
-                  <div className="sheet-body">
-                    <div className="muted">Who will be rocking this fit?</div>
-                    <div className="gender-row">
-                      {['Male','Female','Unisex'].map(g => (
-                        <button key={g} className={selectedGender === g ? 'chip active' : 'chip'} onClick={() => { setSelectedGender(g); setQuantityOpen(true); }}>{g}</button>
-                      ))}
-                    </div>
-                    <div className="actions">
-                      <a className="btn btn-primary" href={buildWhatsAppLink(selectedCategory, selectedGender)} target="_blank" rel="noreferrer">Continue on WhatsApp</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : null}
-          </div>
-        </section>
         <section className="hero">
           <div className="container hero-inner">
             <div className="hero-copy">
@@ -131,11 +99,148 @@ function App() {
           </div>
         </section>
 
+        <section id="picker" className="section">
+          <div className="container">
+            <h2>What are you looking for?</h2>
+            <p className="muted">Pick a category to get started</p>
+            <CategoryPicker
+              onPick={(cat) => { setSelectedCategory(cat); setSelectedGender(null); }}
+              selectedCategory={selectedCategory}
+            />
+            {selectedCategory ? (
+              <div className="followup">
+                <div className="sheet">
+                  <div className="sheet-head">
+                    <div className="Sel">{selectedCategory.title}</div>
+                    <button className="icon-btn" onClick={() => { setSelectedCategory(null); setSelectedGender(null); }} aria-label="Close">✕</button>
+                  </div>
+                  <div className="sheet-body">
+                    <div className="muted">Who will be rocking this fit?</div>
+                    <div className="gender-row">
+                      {['Male','Female','Unisex'].map(g => (
+                        <button key={g} className={selectedGender === g ? 'chip active' : 'chip'} onClick={() => { setSelectedGender(g); setQuantityOpen(true); }}>{g}</button>
+                      ))}
+                    </div>
+                    <div className="actions">
+                      <a className="btn btn-primary" href={buildWhatsAppLink(selectedCategory, selectedGender)} target="_blank" rel="noreferrer">Continue on WhatsApp</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </section>
+
         <section id="gallery" className="section">
           <div className="container">
             <h2>Gallery</h2>
             <p className="muted">Sample custom pieces we can make. Images are placeholders for now.</p>
             <Gallery />
+          </div>
+        </section>
+
+        <section id="testimonials" className="section alt">
+          <div className="container">
+            <h2>What customers say</h2>
+            <div className="grid testimonials-grid">
+              <figure className="t-card">
+                <blockquote>"Quality was exactly as promised. Our college fest tees were a hit!"</blockquote>
+                <figcaption>— Ananya, IIT KGP Fest Team</figcaption>
+              </figure>
+              <figure className="t-card">
+                <blockquote>"Fretor visit built trust. We confirmed sizing and fabric in minutes."</blockquote>
+                <figcaption>— Rahul, Corporate HR</figcaption>
+              </figure>
+              <figure className="t-card">
+                <blockquote>"Fast turnaround and clean embroidery on our varsity jackets."</blockquote>
+                <figcaption>— Meera, Sports Captain</figcaption>
+              </figure>
+            </div>
+          </div>
+        </section>
+
+        <section id="size-fit" className="section">
+          <div className="container">
+            <h2>Size & Fit</h2>
+            <div className="grid size-grid">
+              <div className="card">
+                <h3>Classic Crew Tee</h3>
+                <div className="size-table">
+                  <div className="row head"><span>Size</span><span>Chest (in)</span><span>Length (in)</span></div>
+                  {[
+                    ['S','38','26'],['M','40','27'],['L','42','28'],['XL','44','29'],['XXL','46','30']
+                  ].map((r) => (
+                    <div className="row" key={r[0]}><span>{r[0]}</span><span>{r[1]}</span><span>{r[2]}</span></div>
+                  ))}
+                </div>
+              </div>
+              <div className="card">
+                <h3>Smart Polo</h3>
+                <p className="muted">Regular fit. Go one size up for relaxed fit.</p>
+              </div>
+              <div className="card">
+                <h3>Cozy Hoodie</h3>
+                <p className="muted">Oversized option available on request.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="options" className="section alt">
+          <div className="container">
+            <h2>Fabric & Print options</h2>
+            <div className="grid options-grid">
+              <div className="card">
+                <h3>Fabric</h3>
+                <ul>
+                  <li>100% Cotton (180–240 GSM)</li>
+                  <li>Cotton Rich (60/40)</li>
+                  <li>Performance Blend</li>
+                </ul>
+              </div>
+              <div className="card">
+                <h3>Print</h3>
+                <ul>
+                  <li>DTF (vibrant, versatile)</li>
+                  <li>Screen (bulk friendly)</li>
+                  <li>Embroidery (premium)</li>
+                </ul>
+              </div>
+              <div className="card">
+                <h3>Add‑ons</h3>
+                <ul>
+                  <li>Custom labels & tags</li>
+                  <li>Individual packing</li>
+                  <li>Rapid delivery</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="timeline" className="section">
+          <div className="container">
+            <h2>Your journey with Frete</h2>
+            <ol className="steps wide">
+              <li><span className="step-num">1</span><div><h4>Book</h4><p>Pick a time. Fretor confirms on WhatsApp.</p></div></li>
+              <li><span className="step-num">2</span><div><h4>See Quality</h4><p>Feel fabrics, finalize prints and sizes.</p></div></li>
+              <li><span className="step-num">3</span><div><h4>Approve</h4><p>Transparent quote and production timeline.</p></div></li>
+              <li><span className="step-num">4</span><div><h4>Produce</h4><p>We craft and quality‑check your order.</p></div></li>
+              <li><span className="step-num">5</span><div><h4>Deliver</h4><p>On‑time delivery to your doorstep.</p></div></li>
+            </ol>
+          </div>
+        </section>
+
+        <section id="faq" className="section alt">
+          <div className="container">
+            <h2>FAQ</h2>
+            <div className="faq">
+              {[
+                {q:'Is there a minimum order quantity?', a:'No strict MOQ for tees; pricing improves with quantity.'},
+                {q:'How long does production take?', a:'Typically 5–10 business days after design approval.'},
+                {q:'Can I see samples first?', a:'Yes — your Fretor brings fabric and print samples.'},
+              ].map((f, i) => (<details key={i}><summary>{f.q}</summary><p className="muted">{f.a}</p></details>))}
+            </div>
           </div>
         </section>
 
@@ -170,13 +275,15 @@ function App() {
           </section>
         ) : null}
 
-        <section id="tracker" className="section">
-          <div className="container">
-            <h2>Live Fretor location</h2>
-            <p className="muted">Approximate location updates every few seconds.</p>
-            <TrackerMap />
-          </div>
-        </section>
+        {confirmed ? (
+          <section id="tracker" className="section">
+            <div className="container">
+              <h2>Live Fretor location</h2>
+              <p className="muted">Approximate location updates every few seconds.</p>
+              <TrackerMap />
+            </div>
+          </section>
+        ) : null}
 
         <section id="contact" className="section">
           <div className="container contact">
