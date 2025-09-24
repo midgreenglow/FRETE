@@ -48,6 +48,7 @@ function App() {
 
   return (
     <div className="frete-app">
+      <div className="bg-animated" aria-hidden="true"></div>
       <header className="site-header">
         <div className="container header-inner">
           <div className="brand">
@@ -162,8 +163,8 @@ function App() {
           <section className="section">
             <div className="container">
               <div className="confirm card">
-                <h2>Request received</h2>
-                <p className="muted">Thank you! Our Fretor is on the way to your location to showcase materials and lock your custom design. You can track their live location below.</p>
+                <h2>Booking confirmed</h2>
+                <p className="muted">Your Fretor is on the way to showcase fabric and print quality and finalize your custom design at your doorstep. Track the live location below.</p>
               </div>
             </div>
           </section>
@@ -304,8 +305,12 @@ function App() {
             setQuantity(q);
             setQuantityOpen(false);
             setConfirmed(true);
+            // Optionally notify via WhatsApp silently in new tab
             const link = buildWhatsAppLink(selectedCategory, selectedGender, q);
             window.open(link, '_blank');
+            // Scroll to tracker
+            const section = document.getElementById('tracker');
+            if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }}
         />
       ) : null}
@@ -402,7 +407,8 @@ function TrackerMap() {
         return;
       }
       if (mapRef.current) return; // prevent double init in Strict Mode
-      const start = [28.6139, 77.2090];
+      // Kharagpur, West Bengal
+      const start = [22.3460, 87.2310];
       mapRef.current = L.map(mapEl.current).setView(start, 12);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -410,10 +416,10 @@ function TrackerMap() {
       }).addTo(mapRef.current);
       markerRef.current = L.marker(start).addTo(mapRef.current).bindPopup('Fretor');
       const id = setInterval(() => {
-        const lat = start[0] + (Math.random() - 0.5) * 0.02;
-        const lng = start[1] + (Math.random() - 0.5) * 0.02;
+        const lat = start[0] + (Math.random() - 0.5) * 0.01; // smaller, smoother steps
+        const lng = start[1] + (Math.random() - 0.5) * 0.01;
         if (markerRef.current) markerRef.current.setLatLng([lat, lng]);
-      }, 5000);
+      }, 3000);
       cleanup = () => {
         clearInterval(id);
         if (mapRef.current) {
@@ -432,12 +438,12 @@ function TrackerMap() {
 
 function CategoryPicker({ onPick, selectedCategory }) {
   const categories = [
-    { id: 'round', title: 'Round neck', img: 'https://source.unsplash.com/featured/800x600?tshirt,apparel' },
-    { id: 'polo', title: 'Polo collar', img: 'https://source.unsplash.com/featured/800x600?polo,shirt' },
-    { id: 'varsity', title: 'Varsity', img: 'https://source.unsplash.com/featured/800x600?varsity,jacket' },
-    { id: 'hoodie', title: 'Hoodie', img: 'https://source.unsplash.com/featured/800x600?hoodie' },
-    { id: 'jersey', title: 'Jersey', img: 'https://source.unsplash.com/featured/800x600?sports,jersey' },
-    { id: 'custom', title: 'Your own category', img: 'https://source.unsplash.com/featured/800x600?fashion,clothing' },
+    { id: 'round', title: 'Classic Crew Tee', img: '/images/round.jpg' },
+    { id: 'polo', title: 'Smart Polo', img: '/images/polo.jpg' },
+    { id: 'varsity', title: 'Varsity Jacket', img: '/images/varsity.jpg' },
+    { id: 'hoodie', title: 'Cozy Hoodie', img: '/images/hoodie.jpg' },
+    { id: 'jersey', title: 'Team Jersey', img: '/images/jersey.jpg' },
+    { id: 'custom', title: 'Design Your Own', img: '/images/your%20own%20category.jpg' },
   ];
 
   return (
@@ -449,7 +455,12 @@ function CategoryPicker({ onPick, selectedCategory }) {
           onClick={() => onPick(c)}
         >
           <span className="badge">{c.title}</span>
-          <img src={c.img} alt={c.title} loading="lazy" />
+          <img
+            src={c.img}
+            alt={c.title}
+            loading="lazy"
+            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = `https://picsum.photos/seed/${c.id}/1200/900`; }}
+          />
         </button>
       ))}
     </div>

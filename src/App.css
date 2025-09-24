@@ -15,9 +15,7 @@ html, body, #root { height: 100%; }
 body {
   margin: 0;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  background: radial-gradient(1200px 600px at 80% -10%, rgba(91,140,255,0.15), transparent 60%),
-              radial-gradient(1000px 500px at 10% -20%, rgba(0,212,166,0.12), transparent 60%),
-              var(--bg);
+  background: var(--bg);
   color: var(--text);
 }
 
@@ -30,6 +28,31 @@ body {
 
 .frete-app a { color: inherit; text-decoration: none; }
 .frete-app .btn { cursor: pointer; }
+.frete-app { position: relative; z-index: 1; }
+
+/* Live wallpaper background */
+.bg-animated { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.bg-animated::before, .bg-animated::after {
+  content: "";
+  position: absolute; inset: -20%;
+  background:
+    radial-gradient(45% 35% at 20% 20%, rgba(91,140,255,0.30), transparent 60%),
+    radial-gradient(35% 30% at 80% 10%, rgba(0,212,166,0.26), transparent 60%),
+    radial-gradient(50% 40% at 60% 80%, rgba(91,140,255,0.24), transparent 60%),
+    radial-gradient(40% 35% at 10% 90%, rgba(0,212,166,0.22), transparent 60%),
+    linear-gradient(180deg, #0b0c10 0%, #0b0c10 100%);
+  filter: blur(10px);
+  animation: float-bg 28s linear infinite;
+}
+.bg-animated::after { animation-duration: 36s; animation-direction: reverse; opacity: 0.7; }
+
+@keyframes float-bg {
+  0%   { transform: translate3d(0,0,0) scale(1); }
+  25%  { transform: translate3d(-3%, 2%, 0) scale(1.03); }
+  50%  { transform: translate3d(2%, -3%, 0) scale(1.02); }
+  75%  { transform: translate3d(-2%, -1%, 0) scale(1.04); }
+  100% { transform: translate3d(0,0,0) scale(1); }
+}
 
 /* Header */
 .site-header {
@@ -92,8 +115,8 @@ body {
 .features-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .picker-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .picker-card { position: relative; display: block; overflow: hidden; border-radius: 16px; border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.04); padding: 0; cursor: pointer; text-align: left; }
-.picker-card img { width: 100%; height: 200px; object-fit: cover; display: block; filter: saturate(1.05); transition: transform 0.3s ease; }
-.picker-card .badge { position: absolute; left: 12px; top: 12px; z-index: 2; background: rgba(0,0,0,0.5); padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12); font-weight: 600; }
+.picker-card img { width: 100%; height: 260px; object-fit: cover; display: block; filter: saturate(1.05); transition: transform 0.3s ease; }
+.picker-card .badge { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; background: rgba(0,0,0,0.55); padding: 14px 16px; border-radius: 0; border: none; font-weight: 700; font-size: 18px; color: #ffffff; text-align: left; }
 .picker-card:hover img { transform: scale(1.05); }
 .picker-card.active { outline: 2px solid var(--brand); outline-offset: 2px; }
 .card {
@@ -121,10 +144,10 @@ body {
 .gallery-card .type { color: var(--muted); font-size: 12px; text-transform: capitalize; }
 
 /* Category Picker */
-.picker-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.picker-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .picker-card { position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 0; cursor: pointer; background: rgba(255,255,255,0.04); }
-.picker-card img { width: 100%; height: 180px; object-fit: cover; display: block; filter: saturate(1.05); }
-.picker-card .badge { position: absolute; left: 12px; bottom: 12px; background: rgba(0,0,0,0.55); color: #ffffff; padding: 8px 12px; border-radius: 999px; font-weight: 600; border: 1px solid rgba(255,255,255,0.22); }
+.picker-card img { width: 100%; height: 260px; object-fit: cover; display: block; filter: saturate(1.05); }
+.picker-card .badge { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.55); color: #ffffff; padding: 14px 16px; border-radius: 0; font-weight: 700; font-size: 18px; border: none; text-align: left; }
 .picker-card.active { outline: 2px solid var(--brand); box-shadow: 0 0 0 4px rgba(91,140,255,0.25) inset; }
 .followup { position: relative; margin-top: 16px; }
 .sheet { border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); border-radius: 14px; overflow: hidden; }
@@ -198,4 +221,15 @@ body {
   .hero { padding: 56px 0; }
   .hero h1 { font-size: 34px; }
   .picker-grid, .gallery-grid { grid-template-columns: 1fr; }
+  .picker-card img { height: 220px; }
+}
+
+/* Symmetry tweak: place last two under middle and right on wide screens */
+@media (min-width: 1025px) {
+  .picker-grid > *:nth-child(5) { grid-column: 2; }
+  .picker-grid > *:nth-child(6) { grid-column: 3; }
+}
+@media (min-width: 1280px) {
+  .picker-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .picker-card img { height: 300px; }
 }
