@@ -74,6 +74,7 @@ body {
 .trust-badges span { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); padding: 6px 10px; border-radius: 999px; }
 
 .hero-art { display: grid; place-items: center; }
+.hero-image { width: 100%; max-width: 480px; height: auto; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 60px rgba(0,0,0,0.35); }
 .mock-card {
   width: 100%; max-width: 420px; border-radius: 16px; padding: 20px;
   background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
@@ -148,6 +149,9 @@ body {
 .faq details { border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 10px 12px; background: rgba(255,255,255,0.04); }
 .faq details + details { margin-top: 10px; }
 .faq summary { cursor: pointer; font-weight: 600; }
+
+/* Orders */
+.orders-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
 /* Category Picker */
 .picker-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }

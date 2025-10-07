@@ -1,5 +1,7 @@
 import './App.css';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { auth, googleProvider } from './firebase';
+import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, signInWithPopup, sendPasswordResetEmail, RecaptchaVerifier, signInWithPhoneNumber, updateProfile } from 'firebase/auth';
 
 const WHATSAPP_NUMBER = '916388194021';
 const WHATSAPP_TEXT = encodeURIComponent(
@@ -17,6 +19,71 @@ function App() {
   const [quantityOpen, setQuantityOpen] = useState(false);
   const [quantity, setQuantity] = useState(10);
   const [confirmed, setConfirmed] = useState(false);
+  const followupRef = useRef(null);
+  const [user, setUser] = useState(null);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState('login');
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPass, setAuthPass] = useState('');
+  const [authErr, setAuthErr] = useState('');
+  const [authPhone, setAuthPhone] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [phoneVerified, setPhoneVerified] = useState(false);
+  const recaptchaRef = useRef(null);
+  const confirmationRef = useRef(null);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => setUser(u));
+    return () => unsub();
+  }, []);
+
+  const doLogin = async () => {
+    try {
+      setAuthErr('');
+      await signInWithEmailAndPassword(auth, authEmail, authPass);
+      setAuthOpen(false);
+    } catch (e) { setAuthErr(e.message || 'Login failed'); }
+  };
+  const doSignup = async () => {
+    try {
+      setAuthErr('');
+      if (!phoneVerified) { setAuthErr('Please verify your phone with OTP first'); return; }
+      await createUserWithEmailAndPassword(auth, authEmail, authPass);
+      if (auth.currentUser && authPhone) {
+        try { await updateProfile(auth.currentUser, { displayName: authPhone }); } catch (_) {}
+      }
+      setAuthOpen(false);
+    } catch (e) { setAuthErr(e.message || 'Sign up failed'); }
+  };
+  const doGoogle = async () => {
+    try { await signInWithPopup(auth, googleProvider); setAuthOpen(false); } catch (e) { setAuthErr(e.message || 'Google sign-in failed'); }
+  };
+  const doReset = async () => {
+    try { await sendPasswordResetEmail(auth, authEmail); setAuthErr('Reset email sent'); } catch (e) { setAuthErr(e.message || 'Could not send reset email'); }
+  };
+
+  const ensureRecaptcha = () => {
+    if (window.recaptchaVerifier) return window.recaptchaVerifier;
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'invisible' });
+    return window.recaptchaVerifier;
+  };
+  const sendOtp = async () => {
+    try {
+      setAuthErr('');
+      const verifier = ensureRecaptcha();
+      const phoneE164 = authPhone.startsWith('+') ? authPhone : `+${authPhone}`;
+      confirmationRef.current = await signInWithPhoneNumber(auth, phoneE164, verifier);
+      setOtpSent(true);
+    } catch (e) { setAuthErr(e.message || 'Failed to send OTP'); }
+  };
+  const verifyOtp = async () => {
+    try {
+      setAuthErr('');
+      await confirmationRef.current.confirm(otpCode);
+      setPhoneVerified(true);
+    } catch (e) { setAuthErr(e.message || 'Invalid OTP'); }
+  };
 
   const validate = () => {
     const next = { name: '', phone: '' };
@@ -60,7 +127,13 @@ function App() {
             <a href="#gallery">Gallery</a>
             <a href="#booking">Booking</a>
             <a href="#contact">Contact</a>
+            {user ? <a href="#orders">My Orders</a> : null}
             <a href={WHATSAPP_LINK} className="btn btn-outline" target="_blank" rel="noreferrer">WhatsApp</a>
+            {user ? (
+              <button className="btn btn-secondary" onClick={() => signOut(auth)}>Sign out</button>
+            ) : (
+              <button className="btn btn-primary" onClick={() => setAuthOpen(true)}>Sign in</button>
+            )}
           </nav>
         </div>
       </header>
@@ -87,28 +160,47 @@ function App() {
               </div>
             </div>
             <div className="hero-art" aria-hidden="true">
-              <div className="mock-card">
-                <div className="mock-shirt" />
-                <div className="mock-details">
-                  <span className="pill">100% Cotton</span>
-                  <span className="pill">DTF Print</span>
-                  <span className="pill">Premium Stitch</span>
-                </div>
-              </div>
+              <img src="/images/freetiqmainimage.png" alt="Frete custom apparel" className="hero-image" />
             </div>
           </div>
         </section>
+
+        {user ? (
+          <section id="orders" className="section">
+            <div className="container">
+              <h2>My Orders</h2>
+              <p className="muted">Signed in as {user.email || 'user'}. Order history will appear here.</p>
+              <div className="grid orders-grid">
+                {[1,2,3].map((n) => (
+                  <div className="card" key={n}>
+                    <h3>Order #{1000 + n}</h3>
+                    <p className="muted">Status: Processing</p>
+                    <p className="muted">Items: Sample entry</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
 
         <section id="picker" className="section">
           <div className="container">
             <h2>What are you looking for?</h2>
             <p className="muted">Pick a category to get started</p>
             <CategoryPicker
-              onPick={(cat) => { setSelectedCategory(cat); setSelectedGender(null); }}
+              onPick={(cat) => {
+                setSelectedCategory(cat);
+                setSelectedGender(null);
+                setTimeout(() => {
+                  if (followupRef.current) {
+                    followupRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }, 50);
+              }}
               selectedCategory={selectedCategory}
             />
             {selectedCategory ? (
-              <div className="followup">
+              <div className="followup" ref={followupRef}>
                 <div className="sheet">
                   <div className="sheet-head">
                     <div className="Sel">{selectedCategory.title}</div>
@@ -420,6 +512,53 @@ function App() {
             if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }}
         />
+      ) : null}
+
+      {authOpen ? (
+        <div className="modal" role="dialog" aria-modal="true">
+          <div className="modal-panel">
+            <div className="modal-head">
+              <h3>{authMode === 'login' ? 'Sign in' : 'Create account'}</h3>
+              <button className="icon-btn" onClick={() => setAuthOpen(false)} aria-label="Close">✕</button>
+            </div>
+            <div className="modal-body">
+              {authMode === 'signup' ? (
+                <div className="form-row"><label>Phone (with country code)</label><input type="tel" placeholder="e.g. +91XXXXXXXXXX" value={authPhone} onChange={(e)=>setAuthPhone(e.target.value)} /></div>
+              ) : null}
+              <div className="form-row"><label>Email</label><input type="email" value={authEmail} onChange={(e)=>setAuthEmail(e.target.value)} /></div>
+              <div className="form-row"><label>Password</label><input type="password" value={authPass} onChange={(e)=>setAuthPass(e.target.value)} /></div>
+              {authErr ? <div className="error">{authErr}</div> : null}
+              <div className="actions">
+                {authMode === 'login' ? (
+                  <>
+                    <button className="btn btn-primary" onClick={doLogin}>Sign in</button>
+                    <button className="btn btn-secondary" onClick={doGoogle}>Continue with Google</button>
+                    <button className="btn btn-outline" onClick={() => setAuthMode('signup')}>Create account</button>
+                    <button className="btn btn-outline" onClick={doReset}>Forgot password</button>
+                  </>
+                ) : (
+                  <>
+                    {!phoneVerified ? (
+                      <>
+                        {!otpSent ? (
+                          <button className="btn btn-secondary" onClick={sendOtp}>Send OTP</button>
+                        ) : (
+                          <>
+                            <div className="form-row"><label>Enter OTP</label><input type="text" value={otpCode} onChange={(e)=>setOtpCode(e.target.value)} /></div>
+                            <button className="btn btn-secondary" onClick={verifyOtp}>Verify OTP</button>
+                          </>
+                        )}
+                      </>
+                    ) : null}
+                    <button className="btn btn-primary" onClick={doSignup} disabled={!phoneVerified}>Sign up</button>
+                    <button className="btn btn-outline" onClick={() => setAuthMode('login')}>Have an account? Sign in</button>
+                  </>
+                )}
+              </div>
+              <div id="recaptcha-container" ref={recaptchaRef} />
+            </div>
+          </div>
+        </div>
       ) : null}
     </div>
   );

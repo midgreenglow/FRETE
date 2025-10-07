@@ -3,11 +3,12 @@
     {
       "source": "/(.*)",
       "has": [
-        { "type": "host", "value": "freetiq.in" }
+        { "type": "host", "value": "frete.co" }
       ],
-      "destination": "https://www.freetiq.in/$1",
+      "destination": "https://www.frete.co/$1",
       "permanent": true
     }
   ]
 }
+
 
