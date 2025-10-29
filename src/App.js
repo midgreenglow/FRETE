@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { auth, googleProvider } from './firebase';
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, signInWithPopup, sendPasswordResetEmail, RecaptchaVerifier, signInWithPhoneNumber, updateProfile } from 'firebase/auth';
 
-const WHATSAPP_NUMBER = '916388194021';
+const WHATSAPP_NUMBER = '+91 9593250147';
 const WHATSAPP_TEXT = encodeURIComponent(
   'Hi Frete! I want to book a Fretor visit to check quality and place a custom apparel order.'
 );
